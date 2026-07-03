@@ -5,9 +5,6 @@ Automated Telegram bot built with n8n using webhook triggers, Switch-based messa
 ## Tech
 n8n (self-hosted) | Telegram Bot API | Webhooks | Switch Node | Error Handling
 
-## Workflow
-![Workflow](nexus-telegram-bot.png)
-
 ## How to Use
 1. Import the JSON file into n8n
 2. Add your Telegram Bot API token

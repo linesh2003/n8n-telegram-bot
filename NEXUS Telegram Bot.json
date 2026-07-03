@@ -1,0 +1,580 @@
+{
+  "name": "NEXUS Telegram Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7acb0455-17f7-491c-b33a-c120a7407cc8",
+      "name": "Telegram Trigger",
+      "webhookId": "e898983f-b753-42d7-8b90-e7b798bfc60d",
+      "credentials": {
+        "telegramApi": {
+          "id": "SDf2zlqe7dEOCito",
+          "name": "Telegram Trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.from.id }}",
+                    "rightValue": "8965167286",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a37e5378-9e9d-4b60-ac74-c8a9aa8f9aa0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 0"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7d0a64e9-6dd9-40c3-94d5-172e6b886fec",
+      "name": "Auth Check"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "This bot is restricted to authorized users only.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        112
+      ],
+      "id": "d2453f32-3962-4af5-a30b-d9680c36f2c1",
+      "name": "Unauthorized",
+      "webhookId": "5c91dc88-2733-4588-84c5-30e04d6e8f14",
+      "credentials": {
+        "telegramApi": {
+          "id": "SDf2zlqe7dEOCito",
+          "name": "Telegram Trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "/research",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "df1d1709-7380-46eb-87a8-127ce1e44ab3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 0"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f76e56b0-ce2a-4367-848a-07288875567e",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "/coach",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 1"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5372c8c3-9761-4d49-929c-3cc3850805e3",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "/write",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": " Output 2"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -192
+      ],
+      "id": "bce24377-58c2-49b8-9f70-037c751b168e",
+      "name": "Route Command"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research this company: {{ $('Telegram Trigger').item.json.message.text }}\n\nUse the search tool to find: company profile, funding, key people, recent news, competitors, and opportunity signals. Build a professional intelligence dossier.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a senior business intelligence analyst at McKinsey. Research the company the user mentions using the search tool. Keep the entire response under 1500 characters. Use emojis as bullet points. Be specific with numbers, names, and data from search results."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        848,
+        -480
+      ],
+      "id": "d536d632-44d3-428f-9c34-de6f32f2c3fb",
+      "name": "Research Analyst"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "glm-5-turbo",
+          "mode": "list",
+          "cachedResultName": "glm-5-turbo"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        528
+      ],
+      "id": "8a4d6416-443d-4b95-92a6-901dad908efb",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "M09Ps6LtTAlcET14",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Prepare a deal coaching plan for: {{ $('Telegram Trigger').item.json.message.text }}\n\nUse the search tool to research this company. Then provide: opening line, 5 talking points, 3 likely objections with responses, things to never say, and how to read the room.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a senior sales coach who has closed $100M+ in deals. Prepare a pre-call coaching plan. Keep response under 1500 characters. Use emojis as section headers. Be specific and actionable."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        848,
+        -176
+      ],
+      "id": "66f9df2c-9ae5-4d3a-b9ab-0310c968006c",
+      "name": "Deal Coach"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic: {{ $('Telegram Trigger').item.json.message.text }}\n\nGenerate exactly 3 pieces, separated by exactly --- :\n\nLINKEDIN POST (max 1300 chars, professional, include hashtags)\n---\nTWITTER THREAD (5 short tweets, max 800 chars total)\n---\nEMAIL NEWSLETTER SNIPPET (subject + 2-3 sentences, max 500 chars)",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are an expert B2B content strategist. Generate platform-optimized content. Be specific, include data, and add a clear CTA."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        848,
+        80
+      ],
+      "id": "2dac6d2c-adbf-46f4-829d-28371b4191f4",
+      "name": "Content Writer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User message: {{ $('Telegram Trigger').item.json.message.text }}\n\nIf this looks empty or unclear, respond with:\nI am NEXUS AI. Try these commands:\n/research [company] — Full intelligence dossier\n/coach [company] — Pre-call coaching plan\n/write [topic] — LinkedIn, Twitter and email content\n\nOtherwise respond naturally to what the user said.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are NEXUS AI, a helpful business automation assistant. Keep responses under 500 characters. Be professional and friendly."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        848,
+        320
+      ],
+      "id": "99141324-d158-402a-9e95-41c611f51a3c",
+      "name": "General Chat"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1888,
+        64
+      ],
+      "id": "dffa6dd6-acac-4cd7-b144-9db391fc1165",
+      "name": "Send Reply",
+      "webhookId": "d852741c-6f81-462f-bb13-159d83c12347",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "telegramApi": {
+          "id": "SDf2zlqe7dEOCito",
+          "name": "Telegram Trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FHlzEAKCYXd_6fsnj7HMbI6yV7Qfe37X-KbfYETvx5U",
+          "mode": "list",
+          "cachedResultName": "Telegram Bot",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FHlzEAKCYXd_6fsnj7HMbI6yV7Qfe37X-KbfYETvx5U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Bot_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FHlzEAKCYXd_6fsnj7HMbI6yV7Qfe37X-KbfYETvx5U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now }}",
+            "User": "={{ $('Telegram Trigger').item.json.message.from.first_name }}",
+            "User_ID": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+            "Message": "={{ $('Telegram Trigger').item.json.message.text }}",
+            "Reply_Length": "={{ $json.result.text.length }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reply_Length",
+              "displayName": "Reply_Length",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2112,
+        64
+      ],
+      "id": "18a51748-2c9e-413e-9816-3166c04fd9fd",
+      "name": "Log Interaction",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "w2LfjeCgSXC7OBv3",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Auth Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth Check": {
+      "main": [
+        [
+          {
+            "node": "Route Command",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Command": {
+      "main": [
+        [
+          {
+            "node": "Research Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Deal Coach",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content Writer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "General Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Deal Coach",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Content Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "General Chat",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal Coach": {
+      "main": [
+        [
+          {
+            "node": "Send Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Writer": {
+      "main": [
+        [
+          {
+            "node": "Send Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Analyst": {
+      "main": [
+        [
+          {
+            "node": "Send Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Chat": {
+      "main": [
+        [
+          {
+            "node": "Send Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reply": {
+      "main": [
+        [
+          {
+            "node": "Log Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "drX8jD4X8aluMQIj",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "7f68bc8e-57d3-41ce-a8ec-387b37e59813",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fe6b9af02df823ce33322e10c132f33877f6d596de582c4279293952a2a12acb"
+  },
+  "id": "cZ4Z7PsKRigfdrZa",
+  "tags": []
+}
